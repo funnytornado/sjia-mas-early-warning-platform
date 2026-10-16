@@ -1,0 +1,59 @@
+<view class="wrap">
+ <view class="hero"><view class="muted">家庭记录助手</view><view class="title">把变化，记清楚。</view><view class="sub">记录更轻松 · 变化可追溯 · 就诊说清楚</view><view class="pill topgap">本地离线工具</view></view>
+ <view class="sos" hover-class="tap" bindtap="openSos">紧急求助 · 打开急诊卡</view>
+ <view class="notice topgap">本工具只做记录整理，并按已发表标准给出提示：不提供诊断、治疗或用药建议；任何结论都必须由医生判断。</view>
+ <view class="notice topgap" wx:if="{{lastError}}"><text>上次运行出错：{{lastError}}</text><view class="row topgap"><view class="pill" bindtap="clearLastError">清除提示</view></view></view>
+ <view class="subnav"><view wx:for="{{[{id:'record',label:'记录'},{id:'history',label:'历史'},{id:'trends',label:'趋势'},{id:'query',label:'查询'}]}}" wx:key="id" class="tab {{tab===item.id?'active':''}}" hover-class="tap" data-tab="{{item.id}}" bindtap="switchTab">{{item.label}}</view></view>
+  <block wx:if="{{tab==='record'}}">
+  <view class="tabpane">
+  <view class="card"><view class="heading">记录概况</view><view class="row"><view class="pill">{{reports.length}} 份报告</view><view class="pill">{{symptoms.length}} 条症状</view><view class="pill">{{medications.length}} 条用药</view></view><view class="muted topgap">最近一份报告：{{latestDate||'暂无记录'}}</view><view class="muted">最近报告未包含的项目：{{missingNames||'五种常用指标都有'}}</view><view class="muted topgap">数据只保存在本机，换设备不会同步。</view><button class="secondary" bindtap="resetAll">清空本机全部记录</button><view class="seed" bindtap="seedDemo">加入模拟数据</view></view>
+  <view class="card"><view class="heading">开始记录</view><view class="sub">化验单、用药记录、症状记录都在单独一页里填写；填完返回，这一页会自动更新。</view><button bindtap="goRecord">开始记录</button></view>
+  <view class="card"><view class="heading">从上次就诊到现在</view><view class="sub">摘要把你录入的症状、用药与化验整理成一份文档，可导出 Word 或复制纯文本。</view><view class="row"><picker mode="date" value="{{start}}" data-path="start" bindchange="field"><view class="pill">{{start||'开始日期：全部'}}</view></picker><picker mode="date" value="{{end}}" data-path="end" bindchange="field"><view class="pill">结束：{{end}}</view></picker></view><button bindtap="makeSummary">生成就诊摘要</button><view class="pre">{{summaryText}}</view><view class="row topgap" wx:if="{{summaryText}}"><view class="pill" data-kind="summary" bindtap="previewWord">预览 Word 摘要</view><view class="pill" data-kind="summary" bindtap="shareWord">发送 Word 到聊天</view><view class="pill" bindtap="copySummary">复制纯文本</view></view><view class="muted" wx:if="{{summaryText}}">导出的是真正的 .docx（化验与用药为表格），可在电脑上打开或打印；发送到聊天后可保存或转给医生。</view></view>
+ </view>
+ </block>
+ <block wx:if="{{tab==='history'}}">
+  <view class="tabpane">
+  <view class="card" wx:if="{{detail}}"><view class="heading">{{detail.title}}</view><view class="muted">{{detail.date}} · {{detail.source||'手动录入'}}</view><image wx:if="{{detail.image}}" src="{{detail.image}}" mode="aspectFit" class="report-image" bindtap="previewImage"/><view class="line" wx:for="{{detail.items}}" wx:key="name"><view>{{item.name}}：{{item.value}} {{item.unit}}</view><view class="muted">参考：{{item.reference||'未提供'}} <text class="danger">{{item.flag}}</text></view></view><view class="row topgap"><view class="pill" data-kind="report" bindtap="previewWord">预览 Word 报告</view><view class="pill" data-kind="report" bindtap="shareWord">发送 Word 报告</view></view><view class="muted topgap">导出为 .docx，含化验项目表格，可在电脑上打开或打印。</view><button bindtap="editReport">修改 / 补充这份报告</button><button class="secondary" bindtap="closeDetail">返回列表</button><view class="danger small" data-id="{{detail.id}}" bindtap="deleteRecord">删除报告</view></view>
+  <block wx:else><view class="card"><view class="heading">报告时间线</view><view wx:if="{{!reports.length}}" class="muted">还没有报告，先添加一份记录。</view><view class="line" hover-class="tap" wx:for="{{reports}}" wx:key="id" data-id="{{item.id}}" bindtap="openDetail"><view>{{item.title}} →</view><view class="muted">{{item.date}} · {{item.items.length}} 项 · {{item.source||'手动录入'}}</view></view></view><view class="card"><view class="heading">用药时间线</view><view wx:if="{{!medications.length}}" class="muted">还没有用药记录。</view><view class="line" wx:for="{{medications}}" wx:key="id"><view>{{item.name}} {{item.dose}}<text class="muted"> · {{item.frequency}}</text></view><view class="muted">{{item.endDate?item.date+' 至 '+item.endDate:item.date+' 起 · 未记录结束'}}<text wx:if="{{item.note}}">｜{{item.note}}</text></view><view class="row"><view class="pill" data-id="{{item.id}}" bindtap="editMed">修改</view><view class="danger small" data-id="{{item.id}}" bindtap="deleteRecord">删除</view></view></view></view><view class="card"><view class="heading">症状时间线</view><view class="line" wx:for="{{symptoms}}" wx:key="id"><view class="muted">{{item.date}}</view><view>{{item.text}}</view><view class="row"><view class="pill" data-id="{{item.id}}" bindtap="editSymptom">修改</view><view class="danger small" data-id="{{item.id}}" bindtap="deleteRecord">删除</view></view></view><view class="muted" wx:if="{{!symptoms.length}}">暂无症状记录</view></view></block>
+ </view>
+ </block>
+ <block wx:if="{{tab==='trends'}}">
+  <view class="tabpane"><view class="card"><view class="heading">按项目查看变化</view><view class="sub">只按你录入的数值描点连线，不做任何判断。</view><picker range="{{metricNames}}" bindchange="chooseMetric"><view class="pill">{{selectedMetric}} · 点击切换</view></picker><canvas canvas-id="trend" class="chart"/><view class="notice">{{chartNote}}</view><view class="line" wx:for="{{points}}" wx:key="reportId" data-id="{{item.reportId}}" bindtap="openDetail"><view>{{item.date}} · {{item.value}} {{item.unit}} <text class="danger">{{item.flag}}</text></view><view class="muted">参考：{{item.reference||'未提供'}} · 查看原记录 →</view></view></view></view>
+ </block>
+ 
+ <block wx:if="{{tab==='query'}}">
+  <view class="tabpane">
+  <view class="card"><view class="heading">按日期查询</view><view class="sub">年、月、日可以只选到任意一级：只看年是全年，再看月就是当月，精确到日就是当天。下面先列症状与用药，化验随后补。</view><view class="row topgap"><picker mode="selector" range="{{yearOptions}}" bindchange="pickFilter" data-field="fYear"><view class="pill">{{fYear||'选年份'}} 年</view></picker><picker mode="selector" range="{{monthOptions}}" bindchange="pickFilter" data-field="fMonth"><view class="pill">{{fMonth==='全部'?'全部月份':fMonth+' 月'}}</view></picker><picker mode="selector" range="{{dayOptions}}" bindchange="pickFilter" data-field="fDay"><view class="pill">{{fDay==='全部'?'全部日期':fDay+' 日'}}</view></picker></view><view class="muted topgap">当前范围：{{dayRangeLabel||'未选择'}}</view><button class="secondary" bindtap="resetDayFilter">回到今年</button><view class="heading topgap">症状（{{daySymptoms.length}} 条）</view><view class="line" wx:for="{{daySymptoms}}" wx:key="id"><view>{{item.date}}</view><view>{{item.text}}</view></view><view class="muted" wx:if="{{!daySymptoms.length}}">这个范围内没有症状记录。</view><view class="heading topgap">用药（{{dayMedications.length}} 条）</view><view class="line" wx:for="{{dayMedications}}" wx:key="id"><view>{{item.name}} {{item.dose}}</view><view class="muted">{{item.frequency}}<text wx:if="{{item.note}}">｜{{item.note}}</text></view><view class="muted">{{item.endDate?item.date+' 至 '+item.endDate:item.date+' 起 · 仍在用'}}</view></view><view class="muted" wx:if="{{!dayMedications.length}}">这个范围内没有用药记录。</view></view>
+    <view class="card"><view class="heading">评估</view><view class="sub">按 2016 PRINTO/ACR/EULAR、2004 HLH 与 MS 评分表做静态评估；结果只作提示，不是诊断，必须由医生判断。</view><button bindtap="goAssess">开始评估</button></view>
+</view>
+ </block>
+
+ <view class="sosmask" wx:if="{{sosOpen}}">
+  <view class="sospanel {{sosBig?'sosbig':''}}">
+   <view class="sostitle">急诊卡 · 给医护人员看</view>
+   <view class="soshead">主要诊断</view><view class="sostext">{{sosEmergency.diagnosis||'未填写（未知）'}}</view>
+   <view class="soshead">重要既往并发症</view><view class="sostext">{{sosEmergency.complications||'未填写（未知）'}}</view>
+   <view class="soshead">药物过敏</view><view class="sostext">{{sosStatusText}}</view>
+   <view wx:if="{{sosEmergency.allergyStatus==='known'}}"><view class="sostext" wx:for="{{sosEmergency.allergies}}" wx:key="index">{{item.drug||'未填药名'}}：{{item.reaction||'未填反应'}}</view></view>
+   <view class="soshead">当前用药</view>
+   <view class="sostext" wx:for="{{sosEmergency.meds}}" wx:key="index">{{item.name||'未填药名'}} {{item.dose}} {{item.frequency}}<text wx:if="{{item.lastTaken}}">（最近一次 {{item.lastTaken}}）</text></view>
+   <view class="sostext" wx:if="{{!sosEmergency.meds.length}}">未填写（未知）</view>
+   <view class="soshead">体重 / 身高</view>
+   <view class="sostext">体重：{{sosEmergency.weight||'未填写（未知）'}}<text wx:if="{{sosEmergency.weightDate}}">（{{sosEmergency.weightDate}} 测量）</text></view>
+   <view class="sostext">身高：{{sosEmergency.height||'未填写（未知）'}}<text wx:if="{{sosEmergency.heightDate}}">（{{sosEmergency.heightDate}} 测量）</text></view>
+   <view class="soshead">就诊关系</view>
+   <view class="sostext">长期随诊：{{sosEmergency.hospital||'未填写（未知）'}} {{sosEmergency.department}}</view>
+   <view class="sostext">本地接诊医院：{{sosEmergency.localHospital||'未填写（未知）'}}</view>
+   <view class="sostext">医生联系方式：{{sosEmergency.doctorContact||'未填写（未知）'}}</view>
+   <view class="soshead">专科特别交代</view><view class="sostext">{{sosEmergency.notes||'（留空）'}}</view>
+   <view class="soshead">紧急联系人</view>
+   <view class="sostext">主：{{sosProfile.emgName||'未填写'}} {{sosProfile.emgRelation}} {{sosProfile.emgPhone||'（无电话）'}}</view>
+   <view class="sostext">备用：{{sosProfile.emg2Name||'未填写'}} {{sosProfile.emg2Relation}} {{sosProfile.emg2Phone||'（无电话）'}}</view>
+   <view class="soswarn">内容来自本机保存，无网络也能查看。未填写的项一律标为「未填写（未知）」，不要理解成正常。此入口不会自动通知医生，也不代表救援已受理；紧急情况请直接拨打 120，不要等待线上回复。</view>
+  </view>
+  <view class="sosbtn"><button bindtap="callMain">拨打紧急联系人（主）</button></view>
+  <view class="sosbtn" wx:if="{{sosProfile.emg2Phone}}"><button bindtap="callBackup">拨打备用联系人</button></view>
+  <view class="sosbtn"><button class="btn120" bindtap="call120">拨打 120</button></view>
+  <view class="sosrow"><view class="pill" bindtap="toggleSosBig">{{sosBig?'普通字':'大字'}}</view><view class="pill" bindtap="editEmergency">编辑急诊卡</view><view class="pill" bindtap="closeSos">关闭</view></view>
+ </view>
+</view>

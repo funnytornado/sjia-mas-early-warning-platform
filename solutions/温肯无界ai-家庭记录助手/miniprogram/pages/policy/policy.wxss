@@ -1,0 +1,2 @@
+.badge{display:inline-block;background:#fff2da;color:#8a672c;padding:2rpx 12rpx;border-radius:20rpx;font-size:20rpx;margin-left:8rpx}
+.post-title{font-size:31rpx;font-weight:650;color:#163e45}

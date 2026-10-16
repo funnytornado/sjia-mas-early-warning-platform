@@ -1,0 +1,23 @@
+<view class="wrap">
+ <view class="notice">下面这些内容只保存在本机，换设备不会同步。填写时请按医生嘱咐或证件原本信息录入，不要写未经许可公开的联系方式。</view>
+ <view class="card"><view class="heading">基本信息</view>
+  <view class="label">姓名 / 昵称</view><input placeholder="如 小名 / 姓名" value="{{p.name}}" data-key="name" bindinput="field" bindblur="save"/>
+  <view class="label">性别</view><picker mode="selector" range="{{genders}}" bindchange="pickGender"><view class="pill">{{p.gender}}</view></picker>
+  <view class="label">出生日期</view><picker mode="date" value="{{p.birth}}" bindchange="field" data-key="birth"><view class="pill">{{p.birth||'选择出生日期'}}</view></picker>
+  <view class="muted topgap">年龄：{{age||'填了出生日期后自动算'}}</view>
+  <view class="label">监护人姓名</view><input placeholder="如 张三" value="{{p.guardian}}" data-key="guardian" bindinput="field" bindblur="save"/>
+  <view class="label">与患儿关系</view><input placeholder="如 母亲 / 父亲 / 祖父母" value="{{p.relation}}" data-key="relation" bindinput="field" bindblur="save"/>
+  <view class="label">联系电话</view><input type="number" placeholder="监护人手机号" value="{{p.phone}}" data-key="phone" bindinput="field" bindblur="save"/>
+  <view class="heading topgap">紧急联系人</view>
+  <view class="label">姓名</view><input placeholder="另一个人，不是监护人也可以" value="{{p.emgName}}" data-key="emgName" bindinput="field" bindblur="save"/>
+  <view class="label">与患儿关系</view><input placeholder="如 祖母 / 姑姑" value="{{p.emgRelation}}" data-key="emgRelation" bindinput="field" bindblur="save"/>
+  <view class="label">联系电话</view><input type="number" placeholder="紧急联系人手机号" value="{{p.emgPhone}}" data-key="emgPhone" bindinput="field" bindblur="save"/>
+  <view class="heading topgap">备用联系人</view>
+<view class="label">姓名</view><input placeholder="主联系人打不通时的第二个人" value="{{p.emg2Name}}" data-key="emg2Name" bindinput="field" bindblur="save"/>
+<view class="label">与患儿关系</view><input placeholder="如 祖父 / 舅舅" value="{{p.emg2Relation}}" data-key="emg2Relation" bindinput="field" bindblur="save"/>
+<view class="label">联系电话</view><input type="number" placeholder="备用联系人手机号" value="{{p.emg2Phone}}" data-key="emg2Phone" bindinput="field" bindblur="save"/>
+  <view class="muted topgap">改动会自动保存，不需要点保存按钮。</view>
+ </view>
+ <view class="card"><view class="heading">急诊卡</view><view class="sub">把医生最需要的信息放在一页：主要诊断、药物过敏、当前用药、体重身高、就诊关系、专科特别交代。急诊或转诊时打开给医生看。</view><button bindtap="goEmergency">打开急诊卡</button></view>
+ <view class="card"><view class="heading">清空</view><view class="sub">清空个人信息与急诊卡内容，不影响化验、症状、用药记录。</view><button class="secondary" bindtap="clearPersonal">清空个人信息与急诊卡</button></view>
+</view>

@@ -1,0 +1,16 @@
+<view class="wrap">
+ <view class="notice">这是形态演示：下面所有比例、说明与日期都是写死的样例文字，<text class="danger">不是真实医保政策</text>，也不代表任何医院的真实结算比例。实际报销比例、起付线与备案要求，请以参保地医保局当年文件和医院结算为准。</view>
+ <block wx:if="{{notFound}}">
+  <view class="card"><view class="heading">没有找到这家医院</view><view class="muted">链接可能已失效，请返回就医资源重新选择。</view><button class="secondary" bindtap="back">返回</button></view>
+ </block>
+ <block wx:elif="{{h}}">
+  <view class="card"><view class="post-title">{{h.name}} · 医保政策</view><view class="muted">{{h.city}} · {{h.level}} · 更新：{{h.policy.updatedAt}}<text class="badge">{{demo}}</text></view><view class="sub topgap">以下以报销比例为主，按就医层级分列。</view></view>
+  <view class="card"><view class="heading">报销比例</view>
+   <view class="line" wx:for="{{h.policy.ratios}}" wx:key="item"><view>{{item.item}} · {{item.level}}</view><view class="statusline">{{item.ratio}}</view><view class="muted" wx:if="{{item.note}}">{{item.note}}</view></view>
+  </view>
+  <view class="card"><view class="heading">参保类型与结算方式</view><view class="sub">{{h.policy.scope}}</view><view class="muted topgap">{{h.policy.settlementNote}}</view></view>
+  <view class="card"><view class="heading">注意事项</view><view class="line" wx:for="{{h.policy.notes}}" wx:key="*this"><view>{{item}}</view></view></view>
+  <view class="card"><view class="heading">来源与时效</view><view class="muted">{{h.policy.source}}｜{{h.policy.updatedAt}}</view><view class="muted topgap">真实上线必须由权威来源维护，并标注发布日期与生效范围；本页不含真实政策文件，也不提供代办或报销承诺。</view></view>
+  <button class="secondary" bindtap="back">返回就医资源</button>
+ </block>
+</view>
